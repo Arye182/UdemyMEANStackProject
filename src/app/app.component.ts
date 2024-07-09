@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { UrlHandlingStrategy } from '@angular/router';
+import { Post } from './posts/post.model';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +8,7 @@ import { UrlHandlingStrategy } from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  storedPosts: { title: string, content: string }[] = [];
+  storedPosts: Post[] = [];
   title = 'my-first-full-stack-project';
 
   onPostAdded(post: any) {
