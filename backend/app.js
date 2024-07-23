@@ -12,6 +12,8 @@ const password = encodeURIComponent("MongoDb182");
 const cluster = "cluster0.wilzben";
 const dbname = "posts-full-stack";
 
+// checking pr
+
 mongoose
   .connect(
     `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`
