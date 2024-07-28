@@ -37,6 +37,15 @@ export class PostService {
     return this.postsUpdated.asObservable();
   }
 
+
+  getPost(id: string | null): Post | undefined {
+    const post = this.posts.find(p => p.id === id);
+    if (!post) {
+      return undefined; // or throw an error, or handle it according to your requirements
+    }
+    return { ...post };
+  }
+
   addPost(title: string, content: string) {
     const post: Post = {id: "undefined", title: title, content: content};
     this.http.post<{message: string, postId: string}>('http://localhost:3000/api/posts', post).subscribe((responseData) => {
@@ -55,6 +64,16 @@ export class PostService {
       const updatedPosts = this.posts.filter(post => post.id !== postId);
       this.posts = updatedPosts;
       this.postsUpdated.next([...this.posts]);
+    })
+  }
+
+  updatePost(id: string, title: string, content: string) {
+    const post : Post = {
+      id:id, content: content, title:title
+    }
+    this.http.put("http://localhost:3000/api/posts/" + id, post)
+    .subscribe((response) => {
+      console.log(response);
     })
 
   }
