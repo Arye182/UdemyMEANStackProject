@@ -3,6 +3,7 @@ import { Post } from '../post.model';
 import { FormControl, FormGroup , Validators} from "@angular/forms";
 import { PostService } from "../posts.service";
 import { ActivatedRoute, ParamMap } from "@angular/router";
+import { mimeType } from "./mime-type.validator";
 
 
 @Component({
@@ -15,6 +16,7 @@ export class PostCreateComponent implements OnInit{
   enteredContent = '';
   enteredTitle = '';
   form: FormGroup | undefined;
+  imagePreview: string | undefined;
   private mode = 'create';
   private postId : string | null = null;
   post : Post | undefined;
@@ -26,7 +28,7 @@ export class PostCreateComponent implements OnInit{
     this.form = new FormGroup({
       'title': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
       'content': new FormControl(null, {validators: [Validators.required]}),
-      'image': new FormControl (null, {validators: [Validators.required]})
+      'image': new FormControl (null, {validators: [Validators.required], asyncValidators:[mimeType]})
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
         if (paramMap.has('postId')) {
@@ -65,10 +67,30 @@ export class PostCreateComponent implements OnInit{
   }
 
   onImagePicked(event: Event){
-    const file = (event.target as HTMLInputElement).files?.[0];
-    this.form?.patchValue({image: file});
-    this.form?.get('image')?.updateValueAndValidity();
-    console.log(file);
-    console.log(this.form)
+  // Safely access the selected file
+  const file = (event.target as HTMLInputElement).files?.[0];
+
+  // Check if a file was selected
+  if (!file) {
+    console.warn("No file selected.");
+    return; // Exit the function if no file is selected
+  }
+
+  // Update the form with the selected file
+  this.form?.patchValue({ image: file });
+  this.form?.get('image')?.updateValueAndValidity();
+
+  // Create a FileReader to read the file and generate a preview
+  const reader = new FileReader();
+  reader.onload = () => {
+    // Ensure the result is a string and update the image preview
+    this.imagePreview = reader.result as string;
+  };
+
+  // Read the file as a data URL for previewing
+  reader.readAsDataURL(file);
+
+
+
   }
 }
